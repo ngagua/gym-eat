@@ -1,0 +1,58 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Chalk and rubber: the gym floor in light and dark. */
+  --color-bg: light-dark(#eceef1, #121417);
+  --color-surface: light-dark(#ffffff, #1b1e23);
+  --color-ink: light-dark(#17191d, #eceef1);
+  --color-muted: light-dark(#59606a, #9aa3ae);
+  --color-line: light-dark(#dce0e5, #2b3037);
+
+  --font-sans: 'Archivo', system-ui, sans-serif;
+  --font-display: 'Big Shoulders', 'Archivo', sans-serif;
+}
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+  }
+  html {
+    background: var(--color-bg);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 3px;
+  }
+
+  /* A day wears the color of a calibrated weight plate: red 25 kg for legs, the heaviest day,
+     blue 20 kg back, yellow 15 kg chest, green 10 kg cardio, and chalk for rest. */
+  [data-plate='red'] {
+    --plate: #d42a3f;
+  }
+  [data-plate='blue'] {
+    --plate: #2456d6;
+  }
+  [data-plate='yellow'] {
+    --plate: #f1be27;
+  }
+  [data-plate='green'] {
+    --plate: #2ea259;
+  }
+  [data-plate='chalk'] {
+    --plate: light-dark(#b4bac2, #59606a);
+  }
+
+  /* Lenis drives the window scroller */
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis:not(.lenis-autoToggle).lenis-stopped {
+    overflow: clip;
+  }
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+}
