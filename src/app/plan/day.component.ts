@@ -1,14 +1,14 @@
-import { TitleCasePipe } from '@angular/common';
+import { NgOptimizedImage, TitleCasePipe } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CountUp } from '../motion/count-up.directive';
 import { Reveal } from '../motion/reveal.directive';
-import { total, weekdayOf } from './plan.model';
+import { DEMO_URL, total, weekdayOf } from './plan.model';
 import { Plan } from './plan.service';
 import { Plate } from './plate.component';
 
 @Component({
-  imports: [CountUp, Plate, Reveal, RouterLink, TitleCasePipe],
+  imports: [CountUp, NgOptimizedImage, Plate, Reveal, RouterLink, TitleCasePipe],
   template: `
     @if (dayPlan(); as d) {
       <div
@@ -50,12 +50,71 @@ import { Plate } from './plate.component';
             @if (d.workout; as w) {
               <ol class="mt-3 divide-y divide-line">
                 @for (e of w.exercises; track $index) {
-                  <li class="flex items-baseline justify-between gap-4 py-3">
-                    <span>{{ e.name }}</span>
-                    <span class="shrink-0 font-display text-xl font-bold">{{ e.target }}</span>
+                  <li>
+                    @if (e.demo; as demo) {
+                      <!-- Tap to see the movement: the end photo fades in and out over the start photo. -->
+                      <details class="group">
+                        <summary
+                          class="flex cursor-pointer list-none items-center gap-3 py-3 [&::-webkit-details-marker]:hidden"
+                        >
+                          <img
+                            [ngSrc]="demoUrl + demo + '/0.jpg'"
+                            width="850"
+                            height="567"
+                            alt=""
+                            class="h-10 w-15 shrink-0 rounded-lg object-cover"
+                          />
+                          <span class="flex-1">{{ e.name }}</span>
+                          <span class="shrink-0 font-display text-xl font-bold">{{
+                            e.target
+                          }}</span>
+                          <svg
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            aria-hidden="true"
+                            class="size-5 shrink-0 text-muted transition-transform group-open:rotate-180"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              clip-rule="evenodd"
+                              d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
+                            />
+                          </svg>
+                        </summary>
+                        <div class="mb-4 grid gap-2 motion-reduce:grid-cols-2">
+                          <img
+                            [ngSrc]="demoUrl + demo + '/0.jpg'"
+                            width="850"
+                            height="567"
+                            [alt]="e.name + ', start and end position'"
+                            class="col-start-1 row-start-1 w-full rounded-2xl"
+                          />
+                          <img
+                            [ngSrc]="demoUrl + demo + '/1.jpg'"
+                            width="850"
+                            height="567"
+                            alt=""
+                            class="col-start-1 row-start-1 w-full animate-rep rounded-2xl motion-reduce:col-start-2 motion-reduce:animate-none"
+                          />
+                        </div>
+                      </details>
+                    } @else {
+                      <div class="flex items-baseline justify-between gap-4 py-3">
+                        <span>{{ e.name }}</span>
+                        <span class="shrink-0 font-display text-xl font-bold">{{ e.target }}</span>
+                      </div>
+                    }
                   </li>
                 }
               </ol>
+              <p class="mt-1 text-xs text-muted">
+                Photos from
+                <a
+                  href="https://github.com/yuhonas/free-exercise-db"
+                  class="underline underline-offset-2"
+                  >free-exercise-db</a
+                >, public domain.
+              </p>
             } @else {
               <p class="mt-2 text-muted">No gym today.</p>
             }
@@ -117,4 +176,5 @@ export class Day {
   );
   protected readonly kcal = computed(() => total(this.dayPlan()?.meals ?? [], 'kcal'));
   protected readonly protein = computed(() => total(this.dayPlan()?.meals ?? [], 'protein'));
+  protected readonly demoUrl = DEMO_URL;
 }

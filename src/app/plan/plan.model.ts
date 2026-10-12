@@ -17,6 +17,8 @@ export interface Exercise {
   name: string;
   /** Sets × reps or a duration, e.g. '3 × 10' or '35 min'. */
   target: string;
+  /** free-exercise-db id; its start and end photos play as a loop (DEMO_URL + demo + '/0.jpg'). */
+  demo?: string;
 }
 
 export interface Workout {
@@ -40,6 +42,10 @@ export const weekdayOf = (date: Date) =>
 export const total = (meals: Meal[], key: 'kcal' | 'protein') =>
   meals.reduce((sum, meal) => sum + meal[key], 0);
 
+/** Public-domain exercise photos, pinned to one commit so they never change under the app. */
+export const DEMO_URL =
+  'https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@f00c92c7dcf1216a928a52c3706c7ce8e2f71ed5/exercises/';
+
 // Meals are from the ChatGPT plan. Exercises are placeholders until the trainer's program is filled in.
 const GYM = '11:00';
 
@@ -51,11 +57,23 @@ export const WEEK_PLAN: DayPlan[] = [
     workout: {
       time: GYM,
       exercises: [
-        { name: 'Chest press (machine or barbell)', target: '3 × 10' },
-        { name: 'Incline dumbbell press', target: '3 × 10' },
-        { name: 'Pec deck or cable fly', target: '3 × 12' },
-        { name: 'Triceps rope pushdown', target: '3 × 12' },
-        { name: 'Overhead dumbbell extension', target: '3 × 12' },
+        {
+          name: 'Chest press (machine or barbell)',
+          target: '3 × 10',
+          demo: 'Barbell_Bench_Press_-_Medium_Grip',
+        },
+        { name: 'Incline dumbbell press', target: '3 × 10', demo: 'Incline_Dumbbell_Press' },
+        { name: 'Pec deck or cable fly', target: '3 × 12', demo: 'Butterfly' },
+        {
+          name: 'Triceps rope pushdown',
+          target: '3 × 12',
+          demo: 'Triceps_Pushdown_-_Rope_Attachment',
+        },
+        {
+          name: 'Overhead dumbbell extension',
+          target: '3 × 12',
+          demo: 'Standing_Dumbbell_Triceps_Extension',
+        },
       ],
     },
     meals: [
@@ -153,11 +171,11 @@ export const WEEK_PLAN: DayPlan[] = [
     workout: {
       time: GYM,
       exercises: [
-        { name: 'Lat pulldown', target: '3 × 10' },
-        { name: 'Seated cable row', target: '3 × 10' },
-        { name: 'One-arm dumbbell row', target: '3 × 10 each side' },
-        { name: 'Dumbbell curl', target: '3 × 12' },
-        { name: 'Hammer curl', target: '3 × 12' },
+        { name: 'Lat pulldown', target: '3 × 10', demo: 'Wide-Grip_Lat_Pulldown' },
+        { name: 'Seated cable row', target: '3 × 10', demo: 'Seated_Cable_Rows' },
+        { name: 'One-arm dumbbell row', target: '3 × 10 each side', demo: 'One-Arm_Dumbbell_Row' },
+        { name: 'Dumbbell curl', target: '3 × 12', demo: 'Dumbbell_Bicep_Curl' },
+        { name: 'Hammer curl', target: '3 × 12', demo: 'Hammer_Curls' },
       ],
     },
     meals: [
@@ -207,7 +225,13 @@ export const WEEK_PLAN: DayPlan[] = [
     plate: 'green',
     workout: {
       time: GYM,
-      exercises: [{ name: 'Incline treadmill walk or stairs', target: '30–40 min' }],
+      exercises: [
+        {
+          name: 'Incline treadmill walk or stairs',
+          target: '30–40 min',
+          demo: 'Walking_Treadmill',
+        },
+      ],
     },
     meals: [
       {
@@ -258,12 +282,16 @@ export const WEEK_PLAN: DayPlan[] = [
     workout: {
       time: GYM,
       exercises: [
-        { name: 'Leg press', target: '3 × 10' },
-        { name: 'Goblet squat', target: '3 × 10' },
-        { name: 'Romanian deadlift (dumbbells)', target: '3 × 10' },
-        { name: 'Lying leg curl', target: '3 × 12' },
-        { name: 'Leg extension', target: '3 × 12' },
-        { name: 'Standing calf raise', target: '3 × 15' },
+        { name: 'Leg press', target: '3 × 10', demo: 'Leg_Press' },
+        { name: 'Goblet squat', target: '3 × 10', demo: 'Goblet_Squat' },
+        {
+          name: 'Romanian deadlift (dumbbells)',
+          target: '3 × 10',
+          demo: 'Stiff-Legged_Dumbbell_Deadlift',
+        },
+        { name: 'Lying leg curl', target: '3 × 12', demo: 'Lying_Leg_Curls' },
+        { name: 'Leg extension', target: '3 × 12', demo: 'Leg_Extensions' },
+        { name: 'Standing calf raise', target: '3 × 15', demo: 'Standing_Calf_Raises' },
       ],
     },
     meals: [
