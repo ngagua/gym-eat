@@ -84,8 +84,8 @@ export const WEEK_PLAN: DayPlan[] = [
       {
         time: '10:15',
         name: 'Pre-workout',
-        items: ['Banana (120 g)', 'Skyr (170 g)'],
-        kcal: 210,
+        items: ['Banana (120 g)', 'Greek yogurt (170 g)'],
+        kcal: 225,
         protein: 18,
       },
       {
@@ -165,8 +165,8 @@ export const WEEK_PLAN: DayPlan[] = [
       {
         time: '16:00',
         name: 'Snack',
-        items: ['Skyr (250 g)', 'Oats (50 g dry)', 'Berries (150 g)', 'Almonds (20 g)'],
-        kcal: 535,
+        items: ['Greek yogurt (250 g)', 'Oats (50 g dry)', 'Berries (150 g)', 'Almonds (20 g)'],
+        kcal: 560,
         protein: 39,
       },
       {
@@ -302,8 +302,8 @@ export const WEEK_PLAN: DayPlan[] = [
       {
         time: '10:15',
         name: 'Pre-workout',
-        items: ['Banana (120 g)', 'Skyr (200 g)'],
-        kcal: 225,
+        items: ['Banana (120 g)', 'Greek yogurt (200 g)'],
+        kcal: 245,
         protein: 22,
       },
       {
@@ -404,8 +404,8 @@ export const WEEK_PLAN: DayPlan[] = [
       {
         time: '16:00',
         name: 'Snack',
-        items: ['Skyr (250 g)', 'Apple (180 g)', 'Walnuts (30 g)'],
-        kcal: 445,
+        items: ['Greek yogurt (250 g)', 'Apple (180 g)', 'Walnuts (30 g)'],
+        kcal: 470,
         protein: 32,
       },
       {
