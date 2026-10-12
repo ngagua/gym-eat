@@ -33,6 +33,19 @@ describe('Day', () => {
     expect(el.textContent).toContain('Today');
   });
 
+  it('points Up next at the first exercise, or the first meal without gym', async () => {
+    const upNext = (el: HTMLElement) => el.querySelector('[aria-label="Up next"]')?.textContent;
+
+    const gymDay = upNext(await render('monday'));
+    expect(gymDay).toContain('Chest press (machine or barbell)');
+    expect(gymDay).toContain('Start workout');
+
+    const restDay = upNext(await render('tuesday'));
+    expect(restDay).toContain('Lunch');
+    expect(restDay).toContain('705 kcal');
+    expect(restDay).toContain('See meals');
+  });
+
   it('handles an unknown day', async () => {
     const el = await render('funday');
     expect(el.querySelector('h1')?.textContent?.trim()).toBe('Unknown day');

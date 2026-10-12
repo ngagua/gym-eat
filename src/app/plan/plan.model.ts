@@ -4,6 +4,15 @@ export type Weekday =
 /** A day's color, after calibrated weight plates; the values live in styles.css. */
 export type Plate = 'red' | 'blue' | 'yellow' | 'green' | 'chalk';
 
+/** What each plate color weighs, etched on the plate that turns behind the day's ring. */
+export const PLATE_WEIGHT: Record<Plate, string> = {
+  red: '25 KG',
+  blue: '20 KG',
+  yellow: '15 KG',
+  green: '10 KG',
+  chalk: 'REST',
+};
+
 export interface Meal {
   time: string;
   name: string;

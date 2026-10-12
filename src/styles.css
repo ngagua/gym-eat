@@ -10,6 +10,80 @@
 
   --font-sans: 'Archivo', system-ui, sans-serif;
   --font-display: 'Big Shoulders', 'Archivo', sans-serif;
+
+  /* The motion background: glows drifting in the day's plate color, a weight plate turning once
+     every 90 s, a light sweep and rising chalk dust. Every loop is slow enough to read as ambient. */
+  --animate-drift-a: drift-a 18s ease-in-out infinite;
+  --animate-drift-b: drift-b 22s ease-in-out infinite;
+  --animate-drift-c: drift-c 26s ease-in-out infinite;
+  --animate-turn: turn 90s linear infinite;
+  --animate-sweep: sweep 9s ease-in-out infinite;
+  --animate-rise: rise 12s linear infinite;
+  --animate-breathe: breathe 5s ease-in-out infinite;
+  --animate-live: live 2s ease-in-out infinite;
+
+  @keyframes drift-a {
+    50% {
+      translate: -70px 90px;
+      scale: 1.18;
+    }
+  }
+  @keyframes drift-b {
+    50% {
+      translate: 80px -60px;
+      scale: 0.92;
+    }
+  }
+  @keyframes drift-c {
+    50% {
+      translate: 60px -80px;
+      scale: 1.12;
+    }
+  }
+  @keyframes turn {
+    to {
+      rotate: 360deg;
+    }
+  }
+  @keyframes sweep {
+    from {
+      translate: -40vw;
+    }
+    60%,
+    to {
+      translate: 140vw;
+    }
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+    }
+    12% {
+      opacity: 0.8;
+    }
+    80% {
+      opacity: 0.45;
+    }
+    to {
+      translate: 0 -70vh;
+      opacity: 0;
+    }
+  }
+  @keyframes breathe {
+    50% {
+      opacity: 1;
+      scale: 1.08;
+    }
+  }
+  @keyframes live {
+    from,
+    to {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--plate) 70%, transparent);
+    }
+    50% {
+      box-shadow: 0 0 0 6px transparent;
+    }
+  }
 }
 
 @layer base {

@@ -23,6 +23,12 @@ export class Motion {
     });
   }
 
+  /** Scrolls an element to the top of the view: smoothly through Lenis, or at once under reduced motion. */
+  scrollTo(target: HTMLElement): void {
+    if (this.lenis) this.lenis.scrollTo(target, { offset: -24 });
+    else target.scrollIntoView();
+  }
+
   /** Called once at startup from an app initializer. */
   start(): void {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
