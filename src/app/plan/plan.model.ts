@@ -2,7 +2,7 @@ export type Weekday =
   'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
 
 /** A day's color, after calibrated weight plates; the values live in styles.css. */
-export type Plate = 'red' | 'blue' | 'yellow' | 'green' | 'chalk';
+export type Plate = 'red' | 'blue' | 'violet' | 'green' | 'chalk';
 
 export interface Meal {
   time: string;
@@ -57,7 +57,7 @@ export const WEEK_PLAN: DayPlan[] = [
   {
     day: 'monday',
     focus: 'Chest + triceps',
-    plate: 'yellow',
+    plate: 'violet',
     workout: {
       time: GYM,
       exercises: [

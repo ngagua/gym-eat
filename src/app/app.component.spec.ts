@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { App } from './app.component';
+import { Motion } from './motion/motion.service';
 
 describe('App', () => {
   beforeEach(async () => {
@@ -22,5 +23,24 @@ describe('App', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const tabs = [...compiled.querySelectorAll('nav a')].map((a) => a.textContent?.trim());
     expect(tabs).toEqual(['Today', 'Week']);
+  });
+
+  it('lets the user pause and replay the animated background', async () => {
+    const fixture = TestBed.createComponent(App);
+    const motion = TestBed.inject(Motion);
+    motion.enabled.set(true);
+    await fixture.whenStable();
+    const button = fixture.nativeElement.querySelector('header button') as HTMLButtonElement;
+
+    expect(button.getAttribute('aria-label')).toBe('Pause background animation');
+    button.click();
+    await fixture.whenStable();
+    expect(motion.backgroundPaused()).toBe(true);
+    expect(localStorage.getItem('gymeat.background-paused')).toBe('true');
+    expect(button.getAttribute('aria-label')).toBe('Play background animation');
+
+    button.click();
+    await fixture.whenStable();
+    expect(motion.backgroundPaused()).toBe(false);
   });
 });

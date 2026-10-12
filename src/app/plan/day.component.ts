@@ -1,6 +1,7 @@
 import { TitleCasePipe } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { ChalkDust } from '../motion/chalk-dust.directive';
 import { CountUp } from '../motion/count-up.directive';
 import { Reveal } from '../motion/reveal.directive';
 import { ExerciseDemo } from './exercise-demo.component';
@@ -9,13 +10,14 @@ import { Plan } from './plan.service';
 import { Plate } from './plate.component';
 
 @Component({
-  imports: [CountUp, ExerciseDemo, Plate, Reveal, RouterLink, TitleCasePipe],
+  imports: [ChalkDust, CountUp, ExerciseDemo, Plate, Reveal, RouterLink, TitleCasePipe],
   template: `
     @if (dayPlan(); as d) {
       <div
         class="grid gap-10 pt-2 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start lg:gap-16"
         [attr.data-plate]="d.plate"
       >
+        <canvas [appChalkDust]="d.plate"></canvas>
         <section class="lg:sticky lg:top-8">
           <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
             <h1 class="font-display text-7xl leading-[0.85] font-black sm:text-8xl">
@@ -32,7 +34,12 @@ import { Plate } from './plate.component';
           @if (d.workout; as w) {
             <p class="mt-1 pl-6 text-muted">Gym at {{ w.time }}</p>
           }
-          <app-plate class="mx-auto mt-8 size-60 sm:size-64 lg:mx-0 lg:size-72" [meals]="d.meals">
+          <!-- Named like the Week card's plate, so navigating grows one into the other. -->
+          <app-plate
+            class="mx-auto mt-8 size-60 sm:size-64 lg:mx-0 lg:size-72"
+            [meals]="d.meals"
+            [style.view-transition-name]="'plate-' + d.day"
+          >
             <span
               class="block font-display text-6xl leading-none font-black"
               [appCountUp]="kcal()"

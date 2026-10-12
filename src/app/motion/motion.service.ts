@@ -8,10 +8,18 @@ import Lenis from 'lenis';
 @Service()
 export class Motion {
   private lenis?: Lenis;
+  private readonly pausedKey = 'gymeat.background-paused';
   /** Animations run. Stays false under reduced motion and in unit tests, which never call start(). */
   readonly enabled = signal(false);
+  /** The user stopped the chalk-dust background (WCAG 2.2.2 asks for a way to). Kept on this device. */
+  readonly backgroundPaused = signal(false);
 
   constructor() {
+    try {
+      this.backgroundPaused.set(localStorage.getItem(this.pausedKey) === 'true');
+    } catch {
+      // Storage is blocked (private mode, site settings), so the background starts out playing.
+    }
     inject(Router).events.subscribe((event) => {
       if (!(event instanceof NavigationEnd)) return;
       if (!this.lenis) {
@@ -39,5 +47,14 @@ export class Motion {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => ScrollTrigger.refresh());
     }).observe(document.body);
+  }
+
+  toggleBackground(): void {
+    this.backgroundPaused.update((paused) => !paused);
+    try {
+      localStorage.setItem(this.pausedKey, String(this.backgroundPaused()));
+    } catch {
+      // Storage is blocked, so the choice lasts until the page reloads.
+    }
   }
 }

@@ -26,22 +26,30 @@
     outline-offset: 3px;
   }
 
-  /* A day wears the color of a calibrated weight plate: red 25 kg for legs, the heaviest day,
-     blue 20 kg back, yellow 15 kg chest, green 10 kg cardio, and chalk for rest. */
+  /* A day wears a plate color. Workouts take calibrated weight plates (red 25 kg for legs, the
+     heaviest day; blue 20 kg for back; green 10 kg for cardio), chest takes violet, rest takes chalk. */
   [data-plate='red'] {
     --plate: #d42a3f;
   }
   [data-plate='blue'] {
     --plate: #2456d6;
   }
-  [data-plate='yellow'] {
-    --plate: #f1be27;
+  [data-plate='violet'] {
+    --plate: #9a4ddb;
   }
   [data-plate='green'] {
     --plate: #2ea259;
   }
   [data-plate='chalk'] {
     --plate: light-dark(#b4bac2, #59606a);
+    /* For the background dust: real chalk is white, and grey specks on a light page look like dirt. */
+    --dust: light-dark(#ffffff, #b4bac2);
+  }
+
+  /* Pages cross-fade on navigation, and a day's plate travels between its Week card and the day page. */
+  ::view-transition-group(*) {
+    animation-duration: 0.45s;
+    animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
   /* Lenis drives the window scroller */

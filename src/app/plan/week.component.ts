@@ -1,13 +1,15 @@
 import { TitleCasePipe } from '@angular/common';
 import { Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { ChalkDust } from '../motion/chalk-dust.directive';
 import { total, weekdayOf } from './plan.model';
 import { Plan } from './plan.service';
 import { Plate } from './plate.component';
 
 @Component({
-  imports: [Plate, RouterLink, TitleCasePipe],
+  imports: [ChalkDust, Plate, RouterLink, TitleCasePipe],
   template: `
+    <canvas appChalkDust="chalk"></canvas>
     <h1 class="pt-2 font-display text-7xl leading-[0.85] font-black sm:text-8xl">Week</h1>
     <ol class="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
       @for (d of days(); track d.day; let i = $index) {
@@ -18,7 +20,12 @@ import { Plate } from './plate.component';
             [attr.aria-current]="d.day === today ? 'date' : null"
             [attr.data-plate]="d.plate"
           >
-            <app-plate class="size-16 shrink-0 xl:size-24" [meals]="d.meals" [delay]="i * 0.07" />
+            <app-plate
+              class="size-16 shrink-0 xl:size-24"
+              [meals]="d.meals"
+              [delay]="i * 0.07"
+              [style.view-transition-name]="'plate-' + d.day"
+            />
             <div class="min-w-0">
               <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
                 <h2 class="font-display text-3xl leading-none font-black xl:text-2xl">
