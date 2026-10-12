@@ -17,8 +17,13 @@ export interface Exercise {
   name: string;
   /** Sets × reps or a duration, e.g. '3 × 10' or '35 min'. */
   target: string;
-  /** free-exercise-db id; its start and end photos play as a loop (DEMO_URL + demo + '/0.jpg'). */
+  /** ExerciseDB exercise id. Ids are permanent; the GIF link is looked up live (see ExerciseDemo). */
   demo?: string;
+}
+
+/** The part of an ExerciseDB `GET /exercises/:id` response the app shows. */
+export interface ExerciseDbResponse {
+  data: { name: string; gifUrl: string };
 }
 
 export interface Workout {
@@ -42,9 +47,8 @@ export const weekdayOf = (date: Date) =>
 export const total = (meals: Meal[], key: 'kcal' | 'protein') =>
   meals.reduce((sum, meal) => sum + meal[key], 0);
 
-/** Public-domain exercise photos, pinned to one commit so they never change under the app. */
-export const DEMO_URL =
-  'https://cdn.jsdelivr.net/gh/yuhonas/free-exercise-db@f00c92c7dcf1216a928a52c3706c7ce8e2f71ed5/exercises/';
+/** ExerciseDB's free tier: no key, 180p GIFs, rate limited. */
+export const EXERCISE_API = 'https://oss.exercisedb.dev/api/v1/exercises/';
 
 // Meals are from the ChatGPT plan. Exercises are placeholders until the trainer's program is filled in.
 const GYM = '11:00';
@@ -60,19 +64,19 @@ export const WEEK_PLAN: DayPlan[] = [
         {
           name: 'Chest press (machine or barbell)',
           target: '3 × 10',
-          demo: 'Barbell_Bench_Press_-_Medium_Grip',
+          demo: 'DOoWcnA',
         },
-        { name: 'Incline dumbbell press', target: '3 × 10', demo: 'Incline_Dumbbell_Press' },
-        { name: 'Pec deck or cable fly', target: '3 × 12', demo: 'Butterfly' },
+        { name: 'Incline dumbbell press', target: '3 × 10', demo: 'ns0SIbU' },
+        { name: 'Pec deck or cable fly', target: '3 × 12', demo: 'v3xmPAR' },
         {
           name: 'Triceps rope pushdown',
           target: '3 × 12',
-          demo: 'Triceps_Pushdown_-_Rope_Attachment',
+          demo: 'dU605di',
         },
         {
           name: 'Overhead dumbbell extension',
           target: '3 × 12',
-          demo: 'Standing_Dumbbell_Triceps_Extension',
+          demo: 'PdmaD0N',
         },
       ],
     },
@@ -171,11 +175,11 @@ export const WEEK_PLAN: DayPlan[] = [
     workout: {
       time: GYM,
       exercises: [
-        { name: 'Lat pulldown', target: '3 × 10', demo: 'Wide-Grip_Lat_Pulldown' },
-        { name: 'Seated cable row', target: '3 × 10', demo: 'Seated_Cable_Rows' },
-        { name: 'One-arm dumbbell row', target: '3 × 10 each side', demo: 'One-Arm_Dumbbell_Row' },
-        { name: 'Dumbbell curl', target: '3 × 12', demo: 'Dumbbell_Bicep_Curl' },
-        { name: 'Hammer curl', target: '3 × 12', demo: 'Hammer_Curls' },
+        { name: 'Lat pulldown', target: '3 × 10', demo: 'LEprlgG' },
+        { name: 'Seated cable row', target: '3 × 10', demo: 'fUBheHs' },
+        { name: 'One-arm dumbbell row', target: '3 × 10 each side', demo: 'C0MA9bC' },
+        { name: 'Dumbbell curl', target: '3 × 12', demo: 'NbVPDMW' },
+        { name: 'Hammer curl', target: '3 × 12', demo: 'slDvUAU' },
       ],
     },
     meals: [
@@ -229,7 +233,7 @@ export const WEEK_PLAN: DayPlan[] = [
         {
           name: 'Incline treadmill walk or stairs',
           target: '30–40 min',
-          demo: 'Walking_Treadmill',
+          demo: 'rjiM4L3',
         },
       ],
     },
@@ -282,16 +286,16 @@ export const WEEK_PLAN: DayPlan[] = [
     workout: {
       time: GYM,
       exercises: [
-        { name: 'Leg press', target: '3 × 10', demo: 'Leg_Press' },
-        { name: 'Goblet squat', target: '3 × 10', demo: 'Goblet_Squat' },
+        { name: 'Leg press', target: '3 × 10', demo: '10Z2DXU' },
+        { name: 'Goblet squat', target: '3 × 10', demo: 'yn8yg1r' },
         {
           name: 'Romanian deadlift (dumbbells)',
           target: '3 × 10',
-          demo: 'Stiff-Legged_Dumbbell_Deadlift',
+          demo: 'rR0LJzx',
         },
-        { name: 'Lying leg curl', target: '3 × 12', demo: 'Lying_Leg_Curls' },
-        { name: 'Leg extension', target: '3 × 12', demo: 'Leg_Extensions' },
-        { name: 'Standing calf raise', target: '3 × 15', demo: 'Standing_Calf_Raises' },
+        { name: 'Lying leg curl', target: '3 × 12', demo: '17lJ1kr' },
+        { name: 'Leg extension', target: '3 × 12', demo: 'my33uHU' },
+        { name: 'Standing calf raise', target: '3 × 15', demo: 'ykUOVze' },
       ],
     },
     meals: [

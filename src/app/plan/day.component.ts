@@ -1,14 +1,15 @@
-import { NgOptimizedImage, TitleCasePipe } from '@angular/common';
+import { TitleCasePipe } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CountUp } from '../motion/count-up.directive';
 import { Reveal } from '../motion/reveal.directive';
-import { DEMO_URL, total, weekdayOf } from './plan.model';
+import { ExerciseDemo } from './exercise-demo.component';
+import { total, weekdayOf } from './plan.model';
 import { Plan } from './plan.service';
 import { Plate } from './plate.component';
 
 @Component({
-  imports: [CountUp, NgOptimizedImage, Plate, Reveal, RouterLink, TitleCasePipe],
+  imports: [CountUp, ExerciseDemo, Plate, Reveal, RouterLink, TitleCasePipe],
   template: `
     @if (dayPlan(); as d) {
       <div
@@ -52,18 +53,12 @@ import { Plate } from './plate.component';
                 @for (e of w.exercises; track $index) {
                   <li>
                     @if (e.demo; as demo) {
-                      <!-- Tap to see the movement: the end photo fades in and out over the start photo. -->
+                      <!-- Tap to see the movement; the demo loads on that first tap. -->
                       <details class="group">
                         <summary
+                          #trigger
                           class="flex cursor-pointer list-none items-center gap-3 py-3 [&::-webkit-details-marker]:hidden"
                         >
-                          <img
-                            [ngSrc]="demoUrl + demo + '/0.jpg'"
-                            width="850"
-                            height="567"
-                            alt=""
-                            class="h-10 w-15 shrink-0 rounded-lg object-cover"
-                          />
                           <span class="flex-1">{{ e.name }}</span>
                           <span class="shrink-0 font-display text-xl font-bold">{{
                             e.target
@@ -81,22 +76,9 @@ import { Plate } from './plate.component';
                             />
                           </svg>
                         </summary>
-                        <div class="mb-4 grid gap-2 motion-reduce:grid-cols-2">
-                          <img
-                            [ngSrc]="demoUrl + demo + '/0.jpg'"
-                            width="850"
-                            height="567"
-                            [alt]="e.name + ', start and end position'"
-                            class="col-start-1 row-start-1 w-full rounded-2xl"
-                          />
-                          <img
-                            [ngSrc]="demoUrl + demo + '/1.jpg'"
-                            width="850"
-                            height="567"
-                            alt=""
-                            class="col-start-1 row-start-1 w-full animate-rep rounded-2xl motion-reduce:col-start-2 motion-reduce:animate-none"
-                          />
-                        </div>
+                        @defer (on interaction(trigger)) {
+                          <app-exercise-demo class="mb-4 block" [exerciseId]="demo" />
+                        }
                       </details>
                     } @else {
                       <div class="flex items-baseline justify-between gap-4 py-3">
@@ -108,12 +90,12 @@ import { Plate } from './plate.component';
                 }
               </ol>
               <p class="mt-1 text-xs text-muted">
-                Photos from
+                Animations from
                 <a
-                  href="https://github.com/yuhonas/free-exercise-db"
+                  href="https://github.com/ExerciseDB/exercisedb-api"
                   class="underline underline-offset-2"
-                  >free-exercise-db</a
-                >, public domain.
+                  >ExerciseDB</a
+                >.
               </p>
             } @else {
               <p class="mt-2 text-muted">No gym today.</p>
@@ -176,5 +158,4 @@ export class Day {
   );
   protected readonly kcal = computed(() => total(this.dayPlan()?.meals ?? [], 'kcal'));
   protected readonly protein = computed(() => total(this.dayPlan()?.meals ?? [], 'protein'));
-  protected readonly demoUrl = DEMO_URL;
 }

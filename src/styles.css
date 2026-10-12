@@ -10,22 +10,6 @@
 
   --font-sans: 'Archivo', system-ui, sans-serif;
   --font-display: 'Big Shoulders', 'Archivo', sans-serif;
-
-  /* Crossfades an exercise's end photo over its start photo, so the two read as one movement. */
-  --animate-rep: rep 2.4s ease-in-out infinite;
-  @keyframes rep {
-    0%,
-    35% {
-      opacity: 0;
-    }
-    50%,
-    85% {
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-    }
-  }
 }
 
 @layer base {

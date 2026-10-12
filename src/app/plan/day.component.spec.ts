@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Day } from './day.component';
-import { DEMO_URL, WEEK_PLAN, weekdayOf } from './plan.model';
+import { WEEK_PLAN, weekdayOf } from './plan.model';
 
 describe('Day', () => {
   beforeEach(() => TestBed.configureTestingModule({ providers: [provideRouter([])] }));
@@ -25,9 +25,6 @@ describe('Day', () => {
     expect(el.querySelector('h1')?.textContent?.trim()).toBe('Wednesday');
     expect(el.textContent).toContain(wednesday.focus);
     expect(el.textContent).toContain(wednesday.meals[0].items[0]);
-    expect(el.querySelector('summary img')?.getAttribute('src')).toBe(
-      `${DEMO_URL}${wednesday.workout!.exercises[0].demo}/0.jpg`,
-    );
   });
 
   it('shows today without a URL day', async () => {
