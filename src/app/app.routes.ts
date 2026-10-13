@@ -13,6 +13,11 @@ export const routes: Routes = [
     loadComponent: () => import('./plan/week.component').then((m) => m.Week),
   },
   {
+    path: 'weight',
+    title: 'Weight · GymEat',
+    loadComponent: () => import('./weight/weight.component').then((m) => m.Weight),
+  },
+  {
     path: 'week/:day',
     title: 'Week · GymEat',
     loadComponent: () => import('./plan/day.component').then((m) => m.Day),

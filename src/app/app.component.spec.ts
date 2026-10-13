@@ -17,12 +17,12 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render the Today and Week tabs', async () => {
+  it('should render the Today, Week and Weight tabs', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
     const tabs = [...compiled.querySelectorAll('nav a')].map((a) => a.textContent?.trim());
-    expect(tabs).toEqual(['Today', 'Week']);
+    expect(tabs).toEqual(['Today', 'Week', 'Weight']);
   });
 
   it('lets the user pause and replay the animated background', async () => {

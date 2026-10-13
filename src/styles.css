@@ -7,6 +7,8 @@
   --color-ink: light-dark(#17191d, #eceef1);
   --color-muted: light-dark(#59606a, #9aa3ae);
   --color-line: light-dark(#dce0e5, #2b3037);
+  /* Form errors: a red-plate tint that keeps 4.5:1 on bg and surface in both modes. */
+  --color-danger: light-dark(#c62238, #ff7a8a);
 
   --font-sans: 'Archivo', system-ui, sans-serif;
   --font-display: 'Big Shoulders', 'Archivo', sans-serif;
@@ -62,5 +64,12 @@
   }
   .lenis.lenis-smooth [data-lenis-prevent] {
     overscroll-behavior: contain;
+  }
+}
+
+@layer components {
+  /* Native date, number and text inputs. */
+  .field {
+    @apply w-full rounded-xl border-2 border-line bg-bg px-3 py-2.5 font-normal text-ink tabular-nums aria-invalid:border-danger;
   }
 }

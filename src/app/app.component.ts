@@ -15,7 +15,7 @@ import { Motion } from './motion/motion.service';
         <!-- A tab bar at the thumb on phones, inline in the header from tablets up. -->
         <nav
           aria-label="Main"
-          class="fixed inset-x-0 bottom-0 z-10 grid grid-cols-2 gap-2 border-t border-line bg-surface px-4 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:static md:flex md:border-0 md:bg-transparent md:p-0"
+          class="fixed inset-x-0 bottom-0 z-10 grid grid-cols-3 gap-2 border-t border-line bg-surface px-4 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:static md:flex md:border-0 md:bg-transparent md:p-0"
         >
           @for (tab of tabs; track tab.path) {
             <a
@@ -64,5 +64,6 @@ export class App {
   protected readonly tabs = [
     { path: '/today', label: 'Today' },
     { path: '/week', label: 'Week' },
+    { path: '/weight', label: 'Weight' },
   ];
 }
