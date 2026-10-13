@@ -2,12 +2,14 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { App } from './app.component';
 import { Motion } from './motion/motion.service';
+import { Plan } from './plan/plan.service';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideRouter([])],
+      // A catch-all route, so clicking a tab navigates without needing the real pages.
+      providers: [provideRouter([{ path: '**', children: [] }])],
     }).compileComponents();
   });
 
@@ -23,6 +25,17 @@ describe('App', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const tabs = [...compiled.querySelectorAll('nav a')].map((a) => a.textContent?.trim());
     expect(tabs).toEqual(['Today', 'Week', 'Weight']);
+  });
+
+  it('turns edit mode off when the user leaves through a tab', async () => {
+    const fixture = TestBed.createComponent(App);
+    const plan = TestBed.inject(Plan);
+    plan.editing.set(true);
+    await fixture.whenStable();
+
+    fixture.nativeElement.querySelector('nav a').click();
+    await fixture.whenStable();
+    expect(plan.editing()).toBe(false);
   });
 
   it('lets the user pause and replay the animated background', async () => {

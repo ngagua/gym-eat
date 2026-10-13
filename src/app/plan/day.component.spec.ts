@@ -4,7 +4,10 @@ import { Day } from './day.component';
 import { WEEK_PLAN, weekdayOf } from './plan.model';
 
 describe('Day', () => {
-  beforeEach(() => TestBed.configureTestingModule({ providers: [provideRouter([])] }));
+  beforeEach(() => {
+    localStorage.clear();
+    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+  });
 
   async function render(day?: string) {
     const fixture = TestBed.createComponent(Day);
@@ -31,6 +34,21 @@ describe('Day', () => {
     const el = await render();
     expect(el.querySelector('h1')?.textContent?.trim().toLowerCase()).toBe(weekdayOf(new Date()));
     expect(el.textContent).toContain('Today');
+  });
+
+  it('removes an exercise in edit mode and keeps focus in the list', async () => {
+    const fixture = TestBed.createComponent(Day);
+    fixture.componentRef.setInput('day', 'wednesday');
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+
+    el.querySelector<HTMLButtonElement>('app-edit-toggle button')!.click();
+    await fixture.whenStable();
+    el.querySelector<HTMLButtonElement>('[aria-label="Remove Lat pulldown"]')!.click();
+    await fixture.whenStable();
+
+    expect(el.querySelector('[aria-label="Remove Lat pulldown"]')).toBeNull();
+    expect(document.activeElement?.getAttribute('aria-label')).toBe('Remove Seated cable row');
   });
 
   it('handles an unknown day', async () => {

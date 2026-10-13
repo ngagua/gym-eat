@@ -1,6 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Announcer } from './announcer.service';
 import { Motion } from './motion/motion.service';
+import { Plan } from './plan/plan.service';
 
 @Component({
   imports: [RouterLink, RouterLinkActive, RouterOutlet],
@@ -10,7 +12,13 @@ import { Motion } from './motion/motion.service';
     <header
       class="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-4 md:px-8 md:py-6"
     >
-      <a routerLink="/today" class="font-display text-3xl font-black">Gym+Eat</a>
+      <!-- The logo and tabs end editing; opening a day card from the Week page keeps it on. -->
+      <a
+        routerLink="/today"
+        class="font-display text-3xl font-black"
+        (click)="plan.editing.set(false)"
+        >Gym+Eat</a
+      >
       <div class="flex items-center gap-2">
         <!-- A tab bar at the thumb on phones, inline in the header from tablets up. -->
         <nav
@@ -22,6 +30,7 @@ import { Motion } from './motion/motion.service';
               [routerLink]="tab.path"
               routerLinkActive
               ariaCurrentWhenActive="page"
+              (click)="plan.editing.set(false)"
               class="rounded-full px-5 py-2.5 text-center font-semibold text-muted transition-colors hover:text-ink aria-[current=page]:bg-ink aria-[current=page]:text-bg"
               >{{ tab.label }}</a
             >
@@ -57,10 +66,13 @@ import { Motion } from './motion/motion.service';
     <main class="mx-auto w-full max-w-6xl flex-1 px-5 pb-28 md:px-8 md:pb-16">
       <router-outlet />
     </main>
+    <p role="status" class="sr-only">{{ announcer.message() }}</p>
   `,
 })
 export class App {
   protected readonly motion = inject(Motion);
+  protected readonly announcer = inject(Announcer);
+  protected readonly plan = inject(Plan);
   protected readonly tabs = [
     { path: '/today', label: 'Today' },
     { path: '/week', label: 'Week' },

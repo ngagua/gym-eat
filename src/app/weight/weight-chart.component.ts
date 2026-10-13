@@ -101,7 +101,7 @@ import {
           stroke-width="2"
           class="fill-(--plate) stroke-surface"
         />
-        <!-- The surface-colored stroke paints under the fill, so the label stays legible over the line. -->
+        <!-- A surface-colored stroke under the fill keeps the label legible over the line. -->
         <text
           [attr.x]="p.x"
           [attr.y]="p.y < chart.top + 24 ? p.y + 24 : p.y - 12"

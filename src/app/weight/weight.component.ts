@@ -13,6 +13,7 @@ import {
   viewChildren,
 } from '@angular/core';
 import { form, FormField, FormRoot, max, min, required, validate } from '@angular/forms/signals';
+import { Announcer } from '../announcer.service';
 import { ChalkDust } from '../motion/chalk-dust.directive';
 import { WeightChart } from './weight-chart.component';
 import { WeightLog } from './weight-log.service';
@@ -183,21 +184,18 @@ import {
           }
         </section>
       </div>
-
-      <p role="status" class="sr-only">{{ status() }}</p>
     </div>
   `,
 })
 export class Weight {
   protected readonly log = inject(WeightLog);
+  private readonly announcer = inject(Announcer);
   private readonly locale = inject(LOCALE_ID);
   private readonly injector = inject(Injector);
   private readonly removeButtons = viewChildren<ElementRef<HTMLButtonElement>>('deleteButton');
   private readonly historyTitle = viewChild.required<ElementRef<HTMLElement>>('historyTitle');
 
   protected readonly today = isoDay(new Date());
-  /** Read out by screen readers after a save or a delete. */
-  protected readonly status = signal('');
 
   private readonly weighIn = signal<WeighIn>({ date: this.today, kg: null });
   protected readonly weighInForm = form(
@@ -219,7 +217,7 @@ export class Weight {
           const { date, kg } = this.weighIn();
           if (kg === null) return;
           this.log.log(date, kg);
-          this.status.set(`Saved ${roundKg(kg)} kg for ${this.day(date)}.`);
+          this.announcer.say(`Saved ${roundKg(kg)} kg for ${this.day(date)}.`);
           field().reset({ date: this.today, kg: null });
         },
       },
@@ -241,7 +239,7 @@ export class Weight {
           const { kg } = this.targetModel();
           if (kg === null) return;
           this.log.setTarget(kg);
-          this.status.set(`Target set to ${roundKg(kg)} kg.`);
+          this.announcer.say(`Target set to ${roundKg(kg)} kg.`);
         },
       },
     },
@@ -280,7 +278,7 @@ export class Weight {
 
   protected remove(entry: WeightEntry, index: number): void {
     this.log.remove(entry.date);
-    this.status.set(`Deleted ${entry.kg} kg from ${this.day(entry.date)}.`);
+    this.announcer.say(`Deleted ${entry.kg} kg from ${this.day(entry.date)}.`);
     // Keep keyboard focus in the list: on the row that moved into this spot, else the new last row.
     afterNextRender(
       () => {

@@ -1,8 +1,17 @@
-export type Weekday =
-  'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
+export const WEEKDAYS = [
+  'monday',
+  'tuesday',
+  'wednesday',
+  'thursday',
+  'friday',
+  'saturday',
+  'sunday',
+] as const;
+export type Weekday = (typeof WEEKDAYS)[number];
 
 /** A day's color, after calibrated weight plates; the values live in styles.css. */
-export type Plate = 'red' | 'blue' | 'violet' | 'green' | 'chalk';
+export const PLATES = ['red', 'blue', 'violet', 'green', 'chalk'] as const;
+export type Plate = (typeof PLATES)[number];
 
 export interface Meal {
   time: string;
@@ -26,6 +35,17 @@ export interface ExerciseDbResponse {
   data: { name: string; gifUrl: string };
 }
 
+/** The part of an ExerciseDB `GET /exercises/search` response the app uses. */
+export interface ExerciseSearchResponse {
+  data: { exerciseId: string; name: string }[];
+}
+
+/** A search result ready to list. */
+export interface ExerciseMatch {
+  id: string;
+  name: string;
+}
+
 export interface Workout {
   time: string;
   exercises: Exercise[];
@@ -40,6 +60,18 @@ export interface DayPlan {
   meals: Meal[];
 }
 
+/** One choice in an edit-mode dropdown. */
+export interface PickOption<T> {
+  label: string;
+  value: T;
+}
+
+/** A dropdown `<optgroup>`. */
+export interface PickGroup<T> {
+  label: string;
+  options: PickOption<T>[];
+}
+
 /** Lowercase English weekday in local time ('monday'…), the same format as DayPlan.day. */
 export const weekdayOf = (date: Date) =>
   date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
@@ -47,11 +79,32 @@ export const weekdayOf = (date: Date) =>
 export const total = (meals: Meal[], key: 'kcal' | 'protein') =>
   meals.reduce((sum, meal) => sum + meal[key], 0);
 
-/** ExerciseDB's free tier: no key, 180p GIFs, rate limited. */
+/** ExerciseDB's free tier: no key, 180p GIFs, rate limited, and AscendAPI must be credited. */
 export const EXERCISE_API = 'https://oss.exercisedb.dev/api/v1/exercises/';
 
+export const MIN_SEARCH_LENGTH = 3;
+/** Search waits this long after the last keystroke, because the free API is rate limited. */
+export const SEARCH_DEBOUNCE_MS = 400;
+export const MAX_MATCHES = 10;
+/** The API has no sets or reps, so a searched exercise starts here until you edit it. */
+export const DEFAULT_TARGET = '3 × 10';
+export const MAX_TARGET_LENGTH = 30;
+
+/**
+ * Turns search results into list rows: sentence case like the rest of the plan (ExerciseDB names
+ * are mostly lowercase), without repeat names (a few exercises exist twice under different ids).
+ */
+export const toMatches = (data: ExerciseSearchResponse['data']): ExerciseMatch[] =>
+  data
+    .map((e) => ({ id: e.exerciseId, name: e.name.charAt(0).toUpperCase() + e.name.slice(1) }))
+    .filter(
+      (m, i, all) => all.findIndex((o) => o.name.toLowerCase() === m.name.toLowerCase()) === i,
+    )
+    .slice(0, MAX_MATCHES);
+
 // Meals are from the ChatGPT plan. Exercises are placeholders until the trainer's program is filled in.
-const GYM = '11:00';
+/** Gym time, also used for a workout added to a rest day. */
+export const GYM_TIME = '11:00';
 
 export const WEEK_PLAN: DayPlan[] = [
   {
@@ -59,7 +112,7 @@ export const WEEK_PLAN: DayPlan[] = [
     focus: 'Chest + triceps',
     plate: 'violet',
     workout: {
-      time: GYM,
+      time: GYM_TIME,
       exercises: [
         {
           name: 'Chest press (machine or barbell)',
@@ -133,7 +186,7 @@ export const WEEK_PLAN: DayPlan[] = [
     focus: 'Moderate cardio',
     plate: 'green',
     workout: {
-      time: GYM,
+      time: GYM_TIME,
       exercises: [
         {
           name: 'Incline treadmill walk or stairs',
@@ -189,7 +242,7 @@ export const WEEK_PLAN: DayPlan[] = [
     focus: 'Back + biceps',
     plate: 'blue',
     workout: {
-      time: GYM,
+      time: GYM_TIME,
       exercises: [
         { name: 'Lat pulldown', target: '3 × 10', demo: 'LEprlgG' },
         { name: 'Seated cable row', target: '3 × 10', demo: 'fUBheHs' },
@@ -284,7 +337,7 @@ export const WEEK_PLAN: DayPlan[] = [
     focus: 'Leg day',
     plate: 'red',
     workout: {
-      time: GYM,
+      time: GYM_TIME,
       exercises: [
         { name: 'Leg press', target: '3 × 10', demo: '10Z2DXU' },
         { name: 'Goblet squat', target: '3 × 10', demo: 'yn8yg1r' },
@@ -430,3 +483,101 @@ export const WEEK_PLAN: DayPlan[] = [
     ],
   },
 ];
+
+export const PLAN_STORAGE_KEY = 'gymeat.plan';
+
+/** What `<input type="time">` gives: 'HH:MM', 24-hour. */
+export const TIME_PATTERN = /^\d{2}:\d{2}$/;
+
+/** 'monday' → 'Monday', for messages built in code. */
+export const dayName = (day: Weekday) => day[0].toUpperCase() + day.slice(1);
+
+export const byTime = (a: Meal, b: Meal) => a.time.localeCompare(b.time);
+
+/** Every exercise in the default plan, grouped by the day it comes from. */
+export const EXERCISE_OPTIONS: PickGroup<Exercise>[] = WEEK_PLAN.flatMap((d) =>
+  d.workout
+    ? [
+        {
+          label: d.focus,
+          options: d.workout.exercises.map((e) => ({ label: `${e.name} · ${e.target}`, value: e })),
+        },
+      ]
+    : [],
+);
+
+const ALL_MEALS = WEEK_PLAN.flatMap((d) => d.meals);
+const UNIQUE_MEALS = ALL_MEALS.filter(
+  (meal, i) => ALL_MEALS.findIndex((m) => m.items.join() === meal.items.join()) === i,
+);
+
+/** Every distinct meal in the default plan, grouped by its name (Lunch, Snack…). */
+export const MEAL_OPTIONS: PickGroup<Meal>[] = [...new Set(UNIQUE_MEALS.map((m) => m.name))].map(
+  (name) => ({
+    label: name,
+    options: UNIQUE_MEALS.filter((m) => m.name === name).map((m) => ({
+      // 'Banana (120 g)' → 'Banana': the dropdown has no room for amounts.
+      label: `${m.items.map((item) => item.replace(/\s*\(.*\)$/, '')).join(', ')} · ${m.kcal} kcal`,
+      value: m,
+    })),
+  }),
+);
+
+/** Option values are 'group:option' indexes, e.g. '2:0'. */
+export const optionValue = (group: number, option: number) => `${group}:${option}`;
+
+export const pickOption = <T>(groups: PickGroup<T>[], value: string): T | undefined => {
+  const [group, option] = value.split(':').map(Number);
+  return groups[group]?.options[option]?.value;
+};
+
+const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null;
+const isTime = (v: unknown) => typeof v === 'string' && TIME_PATTERN.test(v);
+const isStrings = (v: unknown) => Array.isArray(v) && v.every((s) => typeof s === 'string');
+
+const isMeal = (m: unknown) =>
+  isRecord(m) &&
+  isTime(m['time']) &&
+  typeof m['name'] === 'string' &&
+  isStrings(m['items']) &&
+  typeof m['kcal'] === 'number' &&
+  typeof m['protein'] === 'number';
+
+const isExercise = (e: unknown) =>
+  isRecord(e) &&
+  typeof e['name'] === 'string' &&
+  typeof e['target'] === 'string' &&
+  (e['demo'] === undefined || typeof e['demo'] === 'string');
+
+const isWorkout = (w: unknown) =>
+  w === undefined ||
+  (isRecord(w) &&
+    isTime(w['time']) &&
+    Array.isArray(w['exercises']) &&
+    w['exercises'].every(isExercise));
+
+const isDay = (d: unknown, i: number): d is DayPlan =>
+  isRecord(d) &&
+  d['day'] === WEEKDAYS[i] &&
+  typeof d['focus'] === 'string' &&
+  PLATES.some((plate) => plate === d['plate']) &&
+  isWorkout(d['workout']) &&
+  Array.isArray(d['meals']) &&
+  d['meals'].every(isMeal);
+
+/**
+ * Reads back an edited week. Storage can be edited by hand or hold an older format after the plan's
+ * shape changes, so anything that isn't a full Monday-to-Sunday plan is ignored and the default
+ * plan shows instead.
+ */
+export function parseSavedWeek(json: string | null): DayPlan[] | null {
+  if (!json) return null;
+  try {
+    const data: unknown = JSON.parse(json);
+    return Array.isArray(data) && data.length === WEEKDAYS.length && data.every(isDay)
+      ? data
+      : null;
+  } catch {
+    return null;
+  }
+}

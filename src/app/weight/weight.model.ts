@@ -1,4 +1,4 @@
-/** One weigh-in. `date` is a local calendar day, 'YYYY-MM-DD', the format `<input type="date">` uses. */
+/** One weigh-in. `date` is a local day, 'YYYY-MM-DD', as `<input type="date">` gives it. */
 export interface WeightEntry {
   date: string;
   kg: number;

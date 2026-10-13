@@ -4,13 +4,27 @@ import { RouterLink } from '@angular/router';
 import { ChalkDust } from '../motion/chalk-dust.directive';
 import { CountUp } from '../motion/count-up.directive';
 import { Reveal } from '../motion/reveal.directive';
+import { EditToggle } from './edit-toggle.component';
 import { ExerciseDemo } from './exercise-demo.component';
+import { MealEditor } from './meal-editor.component';
 import { total, weekdayOf } from './plan.model';
 import { Plan } from './plan.service';
 import { Plate } from './plate.component';
+import { WorkoutEditor } from './workout-editor.component';
 
 @Component({
-  imports: [ChalkDust, CountUp, ExerciseDemo, Plate, Reveal, RouterLink, TitleCasePipe],
+  imports: [
+    ChalkDust,
+    CountUp,
+    EditToggle,
+    ExerciseDemo,
+    MealEditor,
+    Plate,
+    Reveal,
+    RouterLink,
+    TitleCasePipe,
+    WorkoutEditor,
+  ],
   template: `
     @if (dayPlan(); as d) {
       <div
@@ -26,6 +40,7 @@ import { Plate } from './plate.component';
             @if (d.day === today) {
               <span class="rounded-full bg-ink px-3 py-1 text-sm font-semibold text-bg">Today</span>
             }
+            <app-edit-toggle class="ml-auto" />
           </div>
           <p class="mt-5 flex items-center gap-2.5 text-xl font-semibold">
             <span class="size-3.5 shrink-0 rounded-full bg-(--plate)" aria-hidden="true"></span>
@@ -55,7 +70,9 @@ import { Plate } from './plate.component';
         <div class="grid gap-10">
           <section class="rounded-3xl bg-surface p-5 sm:p-7">
             <h2 class="font-display text-3xl font-extrabold">Workout</h2>
-            @if (d.workout; as w) {
+            @if (plan.editing()) {
+              <app-workout-editor class="mt-3" [day]="d" />
+            } @else if (d.workout; as w) {
               <ol class="mt-3 divide-y divide-line">
                 @for (e of w.exercises; track $index) {
                   <li>
@@ -102,7 +119,9 @@ import { Plate } from './plate.component';
                   href="https://github.com/ExerciseDB/exercisedb-api"
                   class="underline underline-offset-2"
                   >ExerciseDB</a
-                >.
+                >
+                by
+                <a href="https://ascendapi.com" class="underline underline-offset-2">AscendAPI</a>.
               </p>
             } @else {
               <p class="mt-2 text-muted">No gym today.</p>
@@ -135,6 +154,9 @@ import { Plate } from './plate.component';
                         <li>{{ item }}</li>
                       }
                     </ul>
+                    @if (plan.editing()) {
+                      <app-meal-editor class="mt-4" [day]="d.day" [index]="$index" [meal]="m" />
+                    }
                   </div>
                 </li>
               }
@@ -154,7 +176,7 @@ import { Plate } from './plate.component';
   `,
 })
 export class Day {
-  private readonly plan = inject(Plan);
+  protected readonly plan = inject(Plan);
 
   /** Route param on /week/:day; unset on /today. */
   readonly day = input<string>();
