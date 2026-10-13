@@ -1,13 +1,14 @@
 import { TitleCasePipe } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { Announcer } from '../announcer.service';
 import { ChalkDust } from '../motion/chalk-dust.directive';
 import { CountUp } from '../motion/count-up.directive';
 import { Reveal } from '../motion/reveal.directive';
 import { EditToggle } from './edit-toggle.component';
 import { ExerciseDemo } from './exercise-demo.component';
 import { MealEditor } from './meal-editor.component';
-import { total, weekdayOf } from './plan.model';
+import { dayName, DayPlan, MAX_FOCUS_LENGTH, total, weekdayOf } from './plan.model';
 import { Plan } from './plan.service';
 import { Plate } from './plate.component';
 import { WorkoutEditor } from './workout-editor.component';
@@ -42,10 +43,26 @@ import { WorkoutEditor } from './workout-editor.component';
             }
             <app-edit-toggle class="ml-auto" />
           </div>
-          <p class="mt-5 flex items-center gap-2.5 text-xl font-semibold">
-            <span class="size-3.5 shrink-0 rounded-full bg-(--plate)" aria-hidden="true"></span>
-            {{ d.focus }}
-          </p>
+          @if (plan.editing()) {
+            <label class="mt-5 grid gap-1.5 text-sm font-semibold">
+              Focus
+              <span class="flex items-center gap-2.5">
+                <span class="size-3.5 shrink-0 rounded-full bg-(--plate)" aria-hidden="true"></span>
+                <input
+                  type="text"
+                  class="field text-xl font-semibold"
+                  [maxLength]="maxFocusLength"
+                  [value]="d.focus"
+                  (change)="setFocus(d, $event)"
+                />
+              </span>
+            </label>
+          } @else {
+            <p class="mt-5 flex items-center gap-2.5 text-xl font-semibold">
+              <span class="size-3.5 shrink-0 rounded-full bg-(--plate)" aria-hidden="true"></span>
+              {{ d.focus }}
+            </p>
+          }
           @if (d.workout; as w) {
             <p class="mt-1 pl-6 text-muted">Gym at {{ w.time }}</p>
           }
@@ -177,6 +194,7 @@ import { WorkoutEditor } from './workout-editor.component';
 })
 export class Day {
   protected readonly plan = inject(Plan);
+  private readonly announcer = inject(Announcer);
 
   /** Route param on /week/:day; unset on /today. */
   readonly day = input<string>();
@@ -187,4 +205,17 @@ export class Day {
   );
   protected readonly kcal = computed(() => total(this.dayPlan()?.meals ?? [], 'kcal'));
   protected readonly protein = computed(() => total(this.dayPlan()?.meals ?? [], 'protein'));
+  protected readonly maxFocusLength = MAX_FOCUS_LENGTH;
+
+  protected setFocus(d: DayPlan, event: Event): void {
+    if (!(event.target instanceof HTMLInputElement)) return;
+    const focus = event.target.value.trim();
+    if (!focus) {
+      // An emptied field: put the saved focus back.
+      event.target.value = d.focus;
+      return;
+    }
+    this.plan.setFocus(d.day, focus);
+    this.announcer.say(`${dayName(d.day)} is now ${focus}.`);
+  }
 }

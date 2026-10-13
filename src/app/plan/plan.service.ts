@@ -45,6 +45,11 @@ export class Plan {
     });
   }
 
+  /** Renames what a day is for, e.g. 'Chest + triceps' or 'Rest day'. */
+  setFocus(day: Weekday, focus: string): void {
+    this.updateDay(day, (d) => ({ ...d, focus }));
+  }
+
   /** Removing the last exercise removes the workout, so the day reads "No gym today". */
   removeExercise(day: Weekday, index: number): void {
     this.updateDay(day, (d) => {

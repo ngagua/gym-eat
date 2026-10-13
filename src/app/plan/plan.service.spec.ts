@@ -39,6 +39,13 @@ describe('Plan', () => {
     expect(dayOf(plan, 'tuesday').workout).toBeUndefined();
   });
 
+  it('renames a day’s focus', () => {
+    const plan = TestBed.inject(Plan);
+    plan.setFocus('sunday', 'Push day');
+
+    expect(dayOf(plan, 'sunday')).toEqual({ ...defaultDay('sunday'), focus: 'Push day' });
+  });
+
   it('edits an exercise’s sets and reps', () => {
     const plan = TestBed.inject(Plan);
     plan.setTarget('friday', 0, '4 × 8');

@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Day } from './day.component';
 import { WEEK_PLAN, weekdayOf } from './plan.model';
+import { Plan } from './plan.service';
 
 describe('Day', () => {
   beforeEach(() => {
@@ -49,6 +50,28 @@ describe('Day', () => {
 
     expect(el.querySelector('[aria-label="Remove Lat pulldown"]')).toBeNull();
     expect(document.activeElement?.getAttribute('aria-label')).toBe('Remove Seated cable row');
+  });
+
+  it('renames the focus in edit mode, and keeps it when the field is emptied', async () => {
+    TestBed.inject(Plan).editing.set(true);
+    const fixture = TestBed.createComponent(Day);
+    fixture.componentRef.setInput('day', 'sunday');
+    await fixture.whenStable();
+    const el = fixture.nativeElement as HTMLElement;
+    const focus = el.querySelector<HTMLInputElement>('section label input')!;
+
+    focus.value = '  ';
+    focus.dispatchEvent(new Event('change'));
+    expect(focus.value).toBe('Rest day');
+
+    focus.value = ' Push day ';
+    focus.dispatchEvent(new Event('change'));
+    await fixture.whenStable();
+    expect(
+      TestBed.inject(Plan)
+        .week()
+        .find((d) => d.day === 'sunday')?.focus,
+    ).toBe('Push day');
   });
 
   it('handles an unknown day', async () => {

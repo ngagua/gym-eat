@@ -89,6 +89,8 @@ export const MAX_MATCHES = 10;
 /** The API has no sets or reps, so a searched exercise starts here until you edit it. */
 export const DEFAULT_TARGET = '3 × 10';
 export const MAX_TARGET_LENGTH = 30;
+/** A day's focus, e.g. 'Chest + triceps'. */
+export const MAX_FOCUS_LENGTH = 40;
 
 /**
  * Turns search results into list rows: sentence case like the rest of the plan (ExerciseDB names
